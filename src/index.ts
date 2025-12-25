@@ -5,7 +5,7 @@ import PDFParser from "pdf2json";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import { SingleBar, Presets } from "cli-progress";
-import { existsSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { useDeck } from "./stages/deck.js";
 import { usePages } from "./stages/pages.js";
 import { useAI } from "./stages/ai.js";
@@ -15,9 +15,21 @@ import { useSync } from "./stages/sync.js";
 
 dotenv.config();
 
-const file = process.argv[2];
+function firstPDF(): string | null {
+  try {
+    const files = readdirSync(".");
+    const pdfFile = files.find((file) => file.toLowerCase().endsWith(".pdf"));
+    return pdfFile || null;
+  } catch (error) {
+    return null;
+  }
+}
+
+const file = process.argv[2] || firstPDF();
 if (!file) {
-  console.error("\nPlease provide a PDF file path as a command-line argument.\n");
+  console.error(
+    "\nPlease provide a PDF file path as a command-line argument or place a PDF file in the current directory.\n",
+  );
   process.exit(1);
 }
 if (!process.env.DEEPSEEK_API_KEY) {
@@ -40,7 +52,7 @@ const bar = new SingleBar({}, Presets.shades_classic);
 parser.on("pdfParser_dataError", (errData) => console.error("parserError" in errData ? errData.parserError : errData));
 parser.on("pdfParser_dataReady", async (data) => {
   console.clear();
-  console.log("PDF parsed successfully.\n");
+  console.log(`PDF on path '${file}' parsed successfully.\n`);
 
   const deck = await useDeck({ data, anki });
   const cardData = await usePages({ data, bar });
