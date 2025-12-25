@@ -15,7 +15,7 @@ A Node.js application that automatically converts PDF documents ([listed here](h
 
 - **Node.js**: v18+ (for ES modules support)
 - **Anki**: with AnkiConnect add-on installed
-  - AnkiConnect: https://github.com/FooSoft/anki-connect
+  - AnkiConnect: https://ankiweb.net/shared/info/2055492159
 - **DeepSeek API Key**: API key from https://platform.deepseek.com/
   - Alternative: Can be modified to use other OpenAI-compatible APIs
 
