@@ -7,9 +7,11 @@ import { ArgumentParser } from "argparse";
 import { pdfCommand } from "./commands/pdf.js";
 import { Context } from "./types.js";
 import { kanjiCommand } from "./commands/kanji.js";
+import { version } from "../package.json";
 
 const argParser = new ArgumentParser();
 
+argParser.add_argument("-v", "--version", { action: "version", version });
 argParser.add_argument("script", { help: "Choose of which script to run", choices: ["pdf", "kanji"] });
 // PDF
 const pdfGroup = argParser.add_argument_group({
