@@ -1,14 +1,11 @@
-import { SingleBar } from "cli-progress";
-import OpenAI from "openai";
+import { Context } from "../types";
 
 export async function useAI({
   cardData,
   openai,
   bar,
-}: {
-  cardData: Array<{ front: string; back: string }>;
-  openai: OpenAI;
-  bar: SingleBar;
+}: Pick<Context, "openai" | "bar"> & {
+  cardData: Array<{ Front: string; Back: string }>;
 }) {
   console.log("Refining flashcards using OpenAI...");
   bar.start(cardData.length, 0);
@@ -23,13 +20,13 @@ export async function useAI({
           },
           {
             role: "user",
-            content: `Format this Russian text by adding spaces between words and after commas: ${item.back}`,
+            content: `Format this Russian text by adding spaces between words and after commas: ${item.Back}`,
           },
         ],
         model: "deepseek-chat",
       });
 
-      const back = response.choices[0].message.content || item.back;
+      const back = response.choices[0].message.content || item.Back;
       bar.increment();
 
       return {

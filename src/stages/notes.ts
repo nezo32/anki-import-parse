@@ -1,27 +1,27 @@
-import { SingleBar } from "cli-progress";
-import { YankiConnect } from "yanki-connect";
+import { Context } from "../types";
 
 export async function useNotes({
   cards,
   anki,
   bar,
-  deck,
-}: {
-  cards: Array<{ front: string; back: string }>;
-  anki: YankiConnect;
-  bar: SingleBar;
+  deck: deckName,
+  modelName = "Basic (and reversed card)",
+}: Pick<Context, "anki" | "bar"> & {
+  cards: Array<Record<string, string>>;
   deck: string;
+  modelName?: string;
 }) {
   console.log("Adding flashcards to Anki...");
   bar.start(cards.length, 0);
+  let i = 0;
   for (const card of cards) {
     const params: Parameters<typeof anki.note.addNote>[0] = {
       note: {
-        deckName: deck,
-        modelName: "Basic (and reversed card)",
-        fields: {
-          Front: card.front,
-          Back: card.back,
+        deckName,
+        modelName,
+        fields: card,
+        options: {
+          duplicateScope: "deck",
         },
       },
     };
@@ -35,8 +35,9 @@ export async function useNotes({
     }
 
     await anki.note.addNote(params);
+    i++;
     bar.increment();
   }
   bar.stop();
-  console.log(`Added ${cards.length} flashcards to Anki.\n`);
+  console.log(`Added ${i} flashcards to Anki.\n`);
 }

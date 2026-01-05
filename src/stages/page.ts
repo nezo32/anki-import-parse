@@ -1,12 +1,12 @@
 import { Page } from "pdf2json";
-import { SingleBar } from "cli-progress";
+import { Context } from "../types";
 
 const isNumber = (value: unknown) => !isNaN(Number(value));
 function containsRussian(text: string) {
   return /[\p{Script=Cyrillic}]/u.test(text);
 }
 
-export function processPage({ page, bar }: { page: Page; bar: SingleBar }) {
+export function processPage({ page, bar }: Pick<Context, "bar"> & { page: Page }) {
   const mappedTexts = page.Texts.map((el) => el.R[0].T);
 
   mappedTexts.splice(0, 9);
@@ -16,18 +16,18 @@ export function processPage({ page, bar }: { page: Page; bar: SingleBar }) {
 
   const splittedTexts = [];
 
-  const lastValue = { front: "", back: "" };
+  const lastValue = { Front: "", Back: "" };
   for (let i = 0; i < mappedTexts.length; i++) {
     const value = mappedTexts[i];
     const nextValue = i + 1 < mappedTexts.length ? mappedTexts[i + 1] : null;
 
     if (nextValue && isNumber(nextValue)) {
-      lastValue.back = value.trim();
-      lastValue.front = lastValue.front.slice(0, -1).trim();
-      lastValue.back.replace("・", "");
-      if (lastValue.front && lastValue.back) splittedTexts.push({ ...lastValue });
-      lastValue.front = "";
-      lastValue.back = "";
+      lastValue.Back = value.trim();
+      lastValue.Front = lastValue.Front.slice(0, -1).trim();
+      lastValue.Back.replace("・", "");
+      if (lastValue.Front && lastValue.Back) splittedTexts.push({ ...lastValue });
+      lastValue.Front = "";
+      lastValue.Back = "";
       continue;
     }
 
@@ -36,9 +36,9 @@ export function processPage({ page, bar }: { page: Page; bar: SingleBar }) {
     }
 
     if (containsRussian(value)) {
-      lastValue.back += value.trim() + " ";
+      lastValue.Back += value.trim() + " ";
     } else {
-      lastValue.front += value.trim() + "／";
+      lastValue.Front += value.trim() + "／";
     }
   }
 

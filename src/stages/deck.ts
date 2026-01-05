@@ -1,9 +1,8 @@
-import { Output } from "pdf2json";
-import { YankiConnect } from "yanki-connect";
+import { Context } from "../types";
 
-export async function useDeck({ data, anki }: { data: Output; anki: YankiConnect }) {
+export async function useDeck({ title, anki }: Pick<Context, "anki"> & { title?: string }) {
   console.log("Creating/Using Anki deck...");
-  const deck = `! ${(data.Meta.Title as string) || "Untitled Deck"}`;
+  const deck = title || `! Untitled Deck`;
   const deckConfig = await anki.deck.getDeckConfig({ deck });
   if (!deckConfig) {
     await anki.deck.createDeck({ deck });
