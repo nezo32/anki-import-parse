@@ -13,19 +13,19 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             arch: x64
-            output: anki-pfd-parser-linux
+            output: anki-import-parser-linux
           - os: macos-latest
             platform: macos
             arch: x64
-            output: anki-pfd-parser-macos
+            output: anki-import-parser-macos
           - os: macos-latest
             platform: macos
             arch: arm64
-            output: anki-pfd-parser-macos-arm64
+            output: anki-import-parser-macos-arm64
           - os: windows-latest
             platform: win
             arch: x64
-            output: anki-pfd-parser-win.exe
+            output: anki-import-parser-win.exe
 
     runs-on: ${{ matrix.os }}
 
@@ -74,9 +74,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            anki-pfd-parser-linux/anki-pfd-parser-linux
-            anki-pfd-parser-macos/anki-pfd-parser-macos
-            anki-pfd-parser-macos-arm64/anki-pfd-parser-macos-arm64
-            anki-pfd-parser-win.exe/anki-pfd-parser-win.exe
+            anki-import-parser-linux/anki-import-parser-linux
+            anki-import-parser-macos/anki-import-parser-macos
+            anki-import-parser-macos-arm64/anki-import-parser-macos-arm64
+            anki-import-parser-win.exe/anki-import-parser-win.exe
           draft: false
           prerelease: false

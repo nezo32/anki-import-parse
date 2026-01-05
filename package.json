@@ -1,7 +1,7 @@
 {
-  "name": "@anki-pfd-parser/main",
-  "version": "1.0.0",
-  "description": "Node.js PDF parser-importer to ANKI cards",
+  "name": "@anki-import-parser/main",
+  "version": "1.1.1",
+  "description": "Bun parser-importer to ANKI cards",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
   "author": {
@@ -9,7 +9,7 @@
   },
   "license": "MIT",
   "bin": {
-    "anki-pfd-parser": "dist/index.js"
+    "anki-import-parser": "dist/index.js"
   },
   "scripts": {
     "dev": "bun --watch src/index.ts",

@@ -1,22 +1,24 @@
-# Anki PDF Parser
+# Anki Import Parser
 
-A Node.js application that automatically converts PDF documents ([listed here](https://jvocab.com/#pdf)) into Anki flashcard decks. Perfect for creating study materials from PDFs, with AI-powered card refinement using DeepSeek.
+A powerful Bun CLI application that automatically converts PDF vocabulary documents and Japanese kanji from ieben.net into Anki flashcard decks. Perfect for creating study materials with AI-powered refinement using DeepSeek.
 
 ## Features
 
-- 📄 **PDF Parsing**: Extracts text from PDF files automatically
-- 🤖 **AI Refinement**: Uses DeepSeek API to improve card formatting and content quality
+- 📄 **PDF Parsing**: Extracts text from PDF vocabulary files automatically
+- 🔤 **Kanji Parsing**: Fetch and parse Japanese kanji from ieben.net with detailed information
+- 🤖 **AI Refinement**: Uses DeepSeek API to improve card formatting and content quality (PDF mode)
 - 🎴 **Anki Integration**: Directly creates flashcard decks in Anki via AnkiConnect
 - 📊 **Progress Tracking**: Real-time progress bars during processing
-- 🔀 **Card Shuffling**: Randomizes card order to prevent learning bias
+- 🔀 **Card Shuffling**: Randomizes card order to prevent learning bias (PDF mode)
 - ✨ **Automatic Sync**: Seamlessly synchronizes cards with Anki
 
 ## Prerequisites
 
 - **Node.js**: v18+ (for ES modules support)
+- **Bun**: Runtime environment (or Node.js with npm/pnpm)
 - **Anki**: with AnkiConnect add-on installed
   - AnkiConnect: https://ankiweb.net/shared/info/2055492159
-- **DeepSeek API Key**: API key from https://platform.deepseek.com/
+- **DeepSeek API Key**: API key from https://platform.deepseek.com/ (required for PDF mode)
   - Alternative: Can be modified to use other OpenAI-compatible APIs
 
 ## Installation
@@ -24,15 +26,15 @@ A Node.js application that automatically converts PDF documents ([listed here](h
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/nezo32/anki-pdf-import-parse.git
-cd anki-pdf-import-parse
+git clone https://github.com/nezo32/anki-import-parse.git
+cd anki-import-parse
 ```
 
 2. Install dependencies:
 
 ```bash
-pnpm install
-# or npm install / yarn install
+npm install
+# or pnpm install / yarn install
 ```
 
 3. Set up environment variables:
@@ -48,98 +50,152 @@ DEEPSEEK_API_KEY=your_deepseek_api_key_here
 npm run build
 ```
 
-## Using the Compiled Executable
+### Alternative: Download Pre-built Executable
 
-Pre-compiled executables are available for Windows, macOS, and Linux. Download the appropriate executable for your platform from the [Releases](https://github.com/nezo32/anki-pdf-import-parse/releases) page.
+You don't need to build the app yourself! You can download the latest pre-built Windows executable directly from the [GitHub Releases](https://github.com/nezo32/anki-import-parse/releases) page:
 
-### Setup
-
-Before running the executable, create a `.env` file in the same directory as the executable:
+1. Go to [Releases](https://github.com/nezo32/anki-import-parse/releases)
+2. Download the latest `anki-import-parser.exe` file
+3. Create a `.env` file in the same directory with your DeepSeek API key (only needed for PDF mode):
 
 ```env
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
 ```
 
-### Running on Windows
+4. Run the executable directly without any build steps!
 
-```cmd
-anki-pfd-parser-win.exe "path\to\your\file.pdf"
-```
+This option is perfect if you don't have Node.js or Bun installed and just want to use the application.
 
-Example:
+## Usage
 
-```cmd
-anki-pfd-parser-win.exe "C:\Users\YourName\Documents\Vocab_N2.pdf"
-```
+The application supports two modes: **PDF parsing** and **Kanji parsing**.
 
-### Running on macOS
+### Global Options
 
-```bash
-chmod +x anki-pfd-parser-macos
-./anki-pfd-parser-macos "/path/to/your/file.pdf"
-```
+- `-v, --version`: Display the application version and exit
 
-For Apple Silicon (M1/M2/M3) Macs:
+**Example:**
 
 ```bash
-chmod +x anki-pfd-parser-macos-arm64
-./anki-pfd-parser-macos-arm64 "/path/to/your/file.pdf"
+# Using npm
+npm run start -v
+npm run start --version
+
+# Using executable
+.\anki-pfd-parser.exe -v
+.\anki-pfd-parser.exe --version
 ```
 
-### Running on Linux
+### PDF Mode
+
+Parse vocabulary from PDF files and create Anki flashcards with AI refinement.
 
 ```bash
-chmod +x anki-pfd-parser-linux
-./anki-pfd-parser-linux "/path/to/your/file.pdf"
+# Using npm
+npm run start pdf -f path/to/your/file.pdf
+
+# Using executable
+.\anki-pfd-parser.exe pdf -f path/to/your/file.pdf
 ```
 
-**Requirements for executable usage:**
+**Options:**
 
-- **Anki**: Must be running with AnkiConnect add-on installed
-- **DeepSeek API Key**: Required in the `.env` file
-- **PDF File**: Valid path to the PDF file to parse
+- `-f, --file`: Path to the PDF file to parse
 
-## Usage (Development)
-
-Using the npm development environment:
-
-1. **Start Anki** with AnkiConnect running (it runs automatically when Anki is open)
-
-2. **Ensure your `.env` file is set up** in the project root with your DeepSeek API key
-
-3. **Run the parser** with a PDF file:
+**Example:**
 
 ```bash
-npm run start <path-to-pdf>
+# Using npm
+npm run start pdf -f ./Vocab_N2.pdf
+
+# Using executable
+.\anki-pfd-parser.exe pdf -f ./Vocab_N2.pdf
 ```
 
-Example:
+The application will:
+
+- Parse the PDF and extract text
+- Create or use an existing Anki deck (named from PDF title)
+- Process text through DeepSeek AI for formatting
+- Create flashcards with front/back content
+- Shuffle cards randomly
+- Add cards to your Anki deck
+- Sync with Anki automatically
+
+**Requirements:**
+
+- PDF file path must be provided
+- `DEEPSEEK_API_KEY` environment variable must be set
+- Anki must be running with AnkiConnect add-on
+
+### Kanji Mode
+
+Fetch and parse Japanese kanji from ieben.net and create Anki flashcards.
 
 ```bash
-npm run start ./Vocab_N2.pdf
+# Using npm
+npm run start kanji -g <grade> -d "<deck-name>" [kanjis...]
+
+# Using executable
+.\anki-pfd-parser.exe kanji -g <grade> -d "<deck-name>" [kanjis...]
 ```
 
-4. The application will:
-   - Parse the PDF and extract text
-   - Create or use an existing Anki deck (named from PDF title)
-   - Process text through DeepSeek AI for formatting
-   - Create flashcards with front/back content
-   - Shuffle cards randomly
-   - Add cards to your Anki deck
-   - Sync with Anki automatically
+**Options:**
+
+- `-g, --grade`: Grade level (1-6, default: 1)
+- `-d, --deck`: Anki deck name (default: "Untitled Deck")
+- `kanjis`: Specific kanji characters to add (optional; if not provided, all kanji for the grade will be added)
+
+**Examples:**
+
+```bash
+# Parse all kanji from grade 2 into deck "N2 Kanji" (using npm)
+npm run start kanji -g 2 -d "N2 Kanji"
+
+# Parse all kanji from grade 2 into deck "N2 Kanji" (using executable)
+.\anki-pfd-parser.exe kanji -g 2 -d "N2 Kanji"
+
+# Parse specific kanji from grade 3 (using npm)
+npm run start kanji -g 3 -d "N3 Kanji" 家 木 火
+
+# Parse specific kanji from grade 3 (using executable)
+.\anki-pfd-parser.exe kanji -g 3 -d "N3 Kanji" 家 木 火
+
+# Parse all kanji from grade 1 (default deck, using executable)
+.\anki-pfd-parser.exe kanji
+```
+
+The application will:
+
+- Fetch kanji data from ieben.net
+- Parse kanji details (meanings, readings, examples)
+- Create flashcards in the specified Anki deck
+- Sync with Anki automatically
+
+**Requirements:**
+
+- Anki must be running with AnkiConnect add-on
+- Internet connection (to fetch from ieben.net)
+- No API key required for this mode
 
 ## Project Structure
 
 ```
 src/
-├── index.ts              # Main entry point
-├── utils.ts              # Utility functions
+├── index.ts              # Main entry point with CLI argument parsing
+├── types.ts              # TypeScript type definitions
+├── utils.ts              # Utility functions (PDF file detection, etc.)
+├── commands/
+│   ├── pdf.ts            # PDF parsing command orchestration
+│   └── kanji.ts          # Kanji parsing command orchestration
 └── stages/
     ├── page.ts           # Single page parsing
     ├── pages.ts          # Batch page processing with progress
     ├── ai.ts             # DeepSeek AI card refinement
     ├── deck.ts           # Anki deck creation/retrieval
     ├── notes.ts          # Add notes to Anki deck
+    ├── ieben_fetch.ts    # Fetch kanji data from ieben.net
+    ├── ieben_parse.ts    # Parse kanji information
     ├── shuffle.ts        # Randomize card order
     └── sync.ts           # Synchronize with Anki
 ```
@@ -147,10 +203,11 @@ src/
 ## Available Scripts
 
 ```bash
-npm run build              # Compile TypeScript to JavaScript
+npm run build             # Compile TypeScript to JavaScript
 npm run dev               # Run in development mode with watch
 npm run start             # Run the compiled application
-npm run build:start       # Build and run in one command
+npm run build:exe         # Build standalone Windows executable
+npm run build:all         # Build both JS and executable
 npm run lint              # Lint TypeScript files
 npm run prepublish        # Prepare for publishing
 ```
@@ -160,16 +217,21 @@ npm run prepublish        # Prepare for publishing
 For development with auto-reload:
 
 ```bash
-npm run dev path/to/your/file.pdf
+npm run dev
 ```
+
+This will watch for changes in the `src` directory and automatically recompile.
 
 ## Technologies Used
 
 - **TypeScript**: Type-safe JavaScript
+- **Bun**: Fast JavaScript runtime
 - **pdf2json**: PDF parsing library
 - **OpenAI SDK**: For DeepSeek API integration
+- **node-html-parser**: HTML parsing for kanji data
 - **yanki-connect**: Anki connectivity via AnkiConnect
 - **cli-progress**: Progress bar visualization
+- **argparse**: CLI argument parsing
 - **dotenv**: Environment variable management
 
 ## Configuration
@@ -193,12 +255,14 @@ The AI prompt can be customized in `src/stages/ai.ts` to control how cards are r
 
 ### "Please provide a PDF file path"
 
-- Make sure to pass the PDF file path as an argument: `npm run start ./file.pdf`
+- Make sure to pass the PDF file path as an argument: `npm run start pdf -f ./file.pdf`
+- Or place a PDF file in the current directory and run without the `-f` flag
 
 ### "Please set the DEEPSEEK_API_KEY environment variable"
 
 - Create a `.env` file with your DeepSeek API key
 - Ensure the file is in the project root directory
+- This is only required for PDF mode, not for Kanji mode
 
 ### "The file does not exist"
 
@@ -210,6 +274,12 @@ The AI prompt can be customized in `src/stages/ai.ts` to control how cards are r
 - Make sure Anki is running
 - Verify AnkiConnect add-on is installed in Anki
 - Default AnkiConnect runs on `http://localhost:8765`
+
+### Kanji parsing fails
+
+- Verify your internet connection
+- Check that ieben.net is accessible
+- Ensure the grade number is between 1-6
 
 ## Contributing
 
@@ -232,3 +302,5 @@ MIT License - see LICENSE file for details
 - AI refinement with DeepSeek
 - Full Anki integration
 - Progress tracking and shuffling
+- Kanji parsing from ieben.net
+- Dual-command architecture (PDF and Kanji modes)
