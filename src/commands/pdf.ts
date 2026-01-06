@@ -1,3 +1,5 @@
+import OpenAI from "openai";
+import PDFParser from "pdf2json";
 import { existsSync } from "fs";
 import { firstPDF } from "../utils";
 import { useDeck } from "../stages/deck.js";
@@ -8,16 +10,23 @@ import { useShuffle } from "../stages/shuffle.js";
 import { useSync } from "../stages/sync.js";
 import { Context } from "../types";
 
-export async function pdfCommand({ anki, pdfParser, bar, openai, args }: Context) {
+export async function pdfCommand({ anki, bar, args }: Omit<Context, "openai" | "pdfParser">) {
+  if (!process.env.OPENAI_API_KEY) {
+    console.error("\nPlease set the OPENAI_API_KEY environment variable.\n");
+    process.exit(1);
+  }
+
+  const openai = new OpenAI({
+    baseURL: process.env.OPENAI_BASE_URL || "https://api.deepseek.com",
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  const pdfParser = new PDFParser();
+
   const file = args.file || firstPDF();
   if (!file || typeof file !== "string") {
     console.error(
       "\nPlease provide a PDF file path as a command-line argument or place a PDF file in the current directory.\n",
     );
-    process.exit(1);
-  }
-  if (!process.env.DEEPSEEK_API_KEY) {
-    console.error("\nPlease set the DEEPSEEK_API_KEY environment variable.\n");
     process.exit(1);
   }
   if (!existsSync(file)) {
@@ -32,7 +41,7 @@ export async function pdfCommand({ anki, pdfParser, bar, openai, args }: Context
     console.clear();
     console.log(`PDF on path '${file}' parsed successfully.\n`);
 
-    const deck = await useDeck({ title: data.Meta.Title, anki });
+    const deck = await useDeck({ title: `! ${data.Meta.Title}`, anki });
     const cardData = await usePages({ data, bar });
     const cards = await useAI({ cardData, openai, bar });
     useShuffle({ cards });

@@ -5,7 +5,7 @@ import { useNotes } from "../stages/notes";
 import { useSync } from "../stages/sync";
 import { Context } from "../types";
 
-export async function kanjiCommand({ anki, bar, args }: Context) {
+export async function kanjiCommand({ anki, bar, args }: Omit<Context, "openai" | "pdfParser">) {
   if (!args.deck || typeof args.deck !== "string") {
     console.error("\nArgument DECK must be non empty string\n");
     process.exit(1);

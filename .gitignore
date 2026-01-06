@@ -4,6 +4,5 @@ dist
 files
 *.pdf
 .vscode
-.env
 .env.local
 *.exe
