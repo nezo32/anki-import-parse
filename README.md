@@ -11,6 +11,7 @@
 - 🤖 **AI-Powered Enhancement**: Use OpenAI/DeepSeek API to refine and format flashcards
 - 🔤 **Kanji Import**: Fetch and import kanji from ieben.net (Japanese education standards)
 - 📚 **Anki Integration**: Seamlessly sync flashcards to your Anki desktop or AnkiWeb
+- 🔁 **Note Type Migration**: Convert selected deck notes from `Простая` to `Простая (с обратной карточкой)`
 - 🎯 **Multiple Grades**: Support for JLPT N1-N6 levels and Japanese school grades 1-6
 - ⚡ **Progress Tracking**: Visual progress bars for long-running operations
 - 🔀 **Smart Shuffling**: Randomize card order for better learning
@@ -79,11 +80,6 @@ OPENAI_API_KEY="your-api-key-here"
 
 # For PDF parsing
 ANIP_FILE_PATH="path/to/vocab.pdf"
-
-# For Kanji import
-ANIP_IEBEN_GRADE="1"
-ANIP_DECK_NAME="! My Kanji Deck"
-ANIP_KANJI_SELECTION=""
 ```
 
 2. **Ensure Anki is running** with AnkiConnect add-on enabled
@@ -109,24 +105,20 @@ anki-import-parser pdf
 4. Adds flashcards to Anki automatically
 5. Syncs changes to AnkiWeb
 
-### Import Kanji by Grade
+### Import Kanji (Interactive)
 
 ```bash
-# Import grade 1 kanji
-anki-import-parser kanji -g 1 -d "! Grade 1 Kanji"
-
-# Import grade 3 kanji with specific characters
-anki-import-parser kanji -g 3 -d "! Grade 3" 一 入 大
-
-# Kanji grades: 1-6 (Japanese school standards)
+# Run interactive kanji import
+anki-import-parser kanji
 ```
 
 **What it does:**
 
-1. Fetches kanji list from ieben.net
-2. Parses kanji data and stroke information
-3. Creates/updates your specified Anki deck
-4. Adds kanji flashcards with stroke counts and readings
+1. Prompts you to select an ieben grade (1-6)
+2. Prompts you to choose an existing deck or create a new one
+3. Optionally lets you enter specific kanji characters
+4. Fetches and parses kanji data from ieben.net
+5. Adds kanji flashcards with stroke counts and readings
 5. Syncs to AnkiWeb
 
 ## Command Reference
@@ -154,40 +146,41 @@ anki-import-parser pdf [options]
 ### Kanji Command
 
 ```bash
-anki-import-parser kanji [options] [kanjis...]
+anki-import-parser kanji
 ```
 
-| Option    | Short | Default                    | Description           |
-| --------- | ----- | -------------------------- | --------------------- |
-| `--grade` | `-g`  | `ANIP_IEBEN_GRADE` env var | Kanji grade (1-6)     |
-| `--deck`  | `-d`  | `ANIP_DECK_NAME` env var   | Target Anki deck name |
-
-**Arguments:**
-
-- `[kanjis...]`: Optional specific kanji characters to import (space-separated)
-
-**Environment Variables:**
-
-- `ANIP_IEBEN_GRADE`: Default kanji grade (1-6)
-- `ANIP_DECK_NAME`: Default deck name
-- `ANIP_KANJI_SELECTION`: Default kanji selection (space-separated)
+This command is interactive. It prompts for:
+- grade from ieben (1-6)
+- target deck (existing or new)
+- optional list of specific kanji characters
 
 **Example:**
 
 ```bash
-# Import all grade 2 kanji
-anki-import-parser kanji -g 2 -d "! Kanji N2"
-
-# Import specific kanji
-anki-import-parser kanji -g 1 一 入 大 木
+# Import with interactive prompts
+anki-import-parser kanji
 ```
+
+### Reverse Command
+
+```bash
+anki-import-parser reverse
+```
+
+**What it does:**
+
+1. Fetches and shows all your Anki deck names
+2. Prompts you to select one or multiple decks (or all)
+3. Finds notes with model `Простая` only inside selected decks
+4. Changes them to `Простая (с обратной карточкой)` while preserving fields and tags
+5. Syncs changes to AnkiWeb
 
 ## Environment Variables
 
 The application loads configuration from `.env` and `.env.local` files. Create either file in your working directory:
 
 ```env
-# Required for PDF and Kanji commands
+# Required for PDF command
 OPENAI_API_KEY=your-api-key-here
 
 # Optional: API endpoint (defaults to DeepSeek)
@@ -195,11 +188,6 @@ OPENAI_BASE_URL=https://api.deepseek.com
 
 # Optional: PDF parsing defaults
 ANIP_FILE_PATH=path/to/vocab.pdf
-
-# Optional: Kanji import defaults
-ANIP_IEBEN_GRADE=1
-ANIP_DECK_NAME=! My Kanji Deck
-ANIP_KANJI_SELECTION=
 ```
 
 ### .env vs .env.local
@@ -214,7 +202,6 @@ Example `.env.local`:
 ```env
 OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxx
 ANIP_FILE_PATH=/Users/yourname/Documents/vocab.pdf
-ANIP_DECK_NAME=! My Japanese Deck
 ```
 
 ### Recommended API Providers
@@ -330,7 +317,8 @@ src/
 ├── utils.ts              # Utility functions
 ├── commands/
 │   ├── pdf.ts            # PDF parsing command
-│   └── kanji.ts          # Kanji import command
+│   ├── kanji.ts          # Kanji import command
+│   └── reverse.ts        # Convert Basic notes to reversed cards
 └── stages/
     ├── ai.ts             # AI text refinement
     ├── deck.ts           # Anki deck management
@@ -339,6 +327,7 @@ src/
     ├── notes.ts          # Create Anki notes
     ├── page.ts           # Parse single PDF page
     ├── pages.ts          # Process all PDF pages
+    ├── prompt.ts         # Reusable interactive CLI prompts
     ├── shuffle.ts        # Randomize cards
     └── sync.ts           # Sync to AnkiWeb
 ```

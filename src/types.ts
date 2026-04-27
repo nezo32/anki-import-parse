@@ -10,7 +10,7 @@ export type Context = {
   pdfParser: PDFParser;
   args: {
     [key: string]: unknown | undefined;
-    script: "pdf" | "kanji";
-    kanjis: string[];
+    script: "pdf" | "kanji" | "reverse";
+    file?: string;
   };
 };

@@ -1,7 +1,6 @@
 import { parse } from "node-html-parser";
-import { Context } from "../types";
 
-export async function useIebenParse({ ieben, args }: Pick<Context, "args"> & { ieben: Response }) {
+export async function useIebenParse({ ieben, kanjis }: { ieben: Response; kanjis: string[] }) {
   console.log(`Parsing fetched HTML...`);
   const document = parse(await ieben.text());
   const data = document
@@ -28,5 +27,5 @@ export async function useIebenParse({ ieben, args }: Pick<Context, "args"> & { i
   }
   console.log(`Parsed ${data.length} kanjis\n`);
 
-  return args.kanjis.length ? data.filter((card) => args.kanjis.includes(card.Kanji)) : data;
+  return kanjis.length ? data.filter((card) => kanjis.includes(card.Kanji)) : data;
 }
