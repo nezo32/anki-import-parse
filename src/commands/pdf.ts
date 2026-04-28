@@ -6,11 +6,12 @@ import { useDeck } from "../stages/deck.js";
 import { usePages } from "../stages/pages.js";
 import { useAI } from "../stages/ai.js";
 import { useNotes } from "../stages/notes.js";
+import { promptText } from "../stages/prompt.js";
 import { useShuffle } from "../stages/shuffle.js";
 import { useSync } from "../stages/sync.js";
 import { Context } from "../types";
 
-export async function pdfCommand({ anki, bar, args }: Omit<Context, "openai" | "pdfParser">) {
+export async function pdfCommand({ anki, bar }: Omit<Context, "openai" | "pdfParser" | "args">) {
   if (!process.env.OPENAI_API_KEY) {
     console.error("\nPlease set the OPENAI_API_KEY environment variable.\n");
     process.exit(1);
@@ -22,10 +23,16 @@ export async function pdfCommand({ anki, bar, args }: Omit<Context, "openai" | "
   });
   const pdfParser = new PDFParser();
 
-  const file = args.file || firstPDF();
-  if (!file || typeof file !== "string") {
+  const defaultFile = process.env.ANIP_FILE_PATH || firstPDF() || "";
+  const answer = await promptText({
+    question: defaultFile ? `Enter PDF file path [${defaultFile}]: ` : "Enter PDF file path: ",
+    allowEmpty: !!defaultFile,
+  });
+  const file = answer || defaultFile;
+
+  if (!file) {
     console.error(
-      "\nPlease provide a PDF file path as a command-line argument or place a PDF file in the current directory.\n",
+      "\nPlease provide a PDF file path.\n",
     );
     process.exit(1);
   }

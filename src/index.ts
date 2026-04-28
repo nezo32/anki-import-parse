@@ -13,12 +13,6 @@ dotenv.config();
 const argParser = new ArgumentParser();
 
 argParser.add_argument("-v", "--version", { action: "version", version });
-// PDF
-const pdfGroup = argParser.add_argument_group({
-  title: "PDF options",
-  description: "Settings for PDF vocab parsing",
-});
-pdfGroup.add_argument("-f", "--file", { help: "File path to vocab PDF to parse", default: process.env.ANIP_FILE_PATH });
 // AFTER
 argParser.add_argument("script", {
   help: "Choose of which script to run",

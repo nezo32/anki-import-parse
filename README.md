@@ -88,12 +88,9 @@ ANIP_FILE_PATH="path/to/vocab.pdf"
 
 ```bash
 # Using downloaded executable
-./anki-import-parser pdf -f path/to/vocab.pdf
+./anki-import-parser pdf
 
 # Using npm
-anki-import-parser pdf -f path/to/vocab.pdf
-
-# Or place PDF in current directory and run
 anki-import-parser pdf
 ```
 
@@ -132,16 +129,13 @@ anki-import-parser kanji
 ### PDF Command
 
 ```bash
-anki-import-parser pdf [options]
+anki-import-parser pdf
 ```
 
-| Option   | Short | Default                  | Description                 |
-| -------- | ----- | ------------------------ | --------------------------- |
-| `--file` | `-f`  | `ANIP_FILE_PATH` env var | Path to PDF vocabulary file |
+This command is interactive. It prompts for:
+- PDF file path
 
-**Environment Variables:**
-
-- `ANIP_FILE_PATH`: Default PDF file path
+`ANIP_FILE_PATH` can be set as the default value for the prompt.
 
 ### Kanji Command
 
@@ -259,7 +253,7 @@ The project comes with sample vocabulary PDFs from [jvocab.com](https://jvocab.c
 Try it out:
 
 ```bash
-anki-import-parser pdf -f Vocab_N5.pdf
+anki-import-parser pdf
 ```
 
 ## Troubleshooting
@@ -285,8 +279,8 @@ anki-import-parser pdf -f Vocab_N5.pdf
 
 **Solution:**
 
-- Provide absolute path to PDF: `anki-import-parser pdf -f C:\Users\YourName\Documents\vocab.pdf`
-- Or place PDF in current directory and run `anki-import-parser pdf`
+- Run `anki-import-parser pdf` and enter the full PDF path when prompted
+- Or set `ANIP_FILE_PATH` / place PDF in current directory and press Enter to use the suggested default
 
 ### API errors or timeouts
 

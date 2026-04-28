@@ -11,6 +11,5 @@ export type Context = {
   args: {
     [key: string]: unknown | undefined;
     script: "pdf" | "kanji" | "reverse";
-    file?: string;
   };
 };
